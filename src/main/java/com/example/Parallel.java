@@ -4,9 +4,10 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.concurrent.ManagedThreadFactory;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class Parallel {
     @Resource(lookup = "java:jboss/ee/concurrency/factory/default")
@@ -19,9 +20,9 @@ public class Parallel {
         this.forkJoinPool = new ForkJoinPool(parallelism, threadFactory, null, false);
     }
 
-    public <T> T submit(Callable<T> task) {
+    public <IN, OUT> OUT submit(Stream<IN> stream, Function<Stream<IN>, OUT> task) {
         try {
-            return forkJoinPool.submit(task).get();
+            return forkJoinPool.submit(() -> task.apply(stream.parallel())).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
