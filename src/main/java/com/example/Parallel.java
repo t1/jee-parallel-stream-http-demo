@@ -23,7 +23,10 @@ public class Parallel {
     public <IN, OUT> OUT submit(Stream<IN> stream, Function<Stream<IN>, OUT> task) {
         try {
             return forkJoinPool.submit(() -> task.apply(stream.parallel())).get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
