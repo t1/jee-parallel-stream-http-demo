@@ -1,0 +1,21 @@
+= Jakarta EE Parallel Stream Http Demo
+
+This is a little demo to show how to use a parallel stream of managed threads doing http requests.
+
+It has two REST resources:
+
+|===
+|URL |Result
+
+|http://localhost:8080/\{n}plus\{m}
+|the sum of `n` and `m`
+
+|http://localhost:8080/sum
+|the sum of a stream of 1 and 2, adding 1 to every element => 5
+|===
+
+The `sum` resource does two parallel http requests to the `plus` resource, using a proper https://jakarta.ee/specifications/concurrency/3.0/jakarta-concurrency-spec-3.0.html#managedthreadfactory[Managed Thread Factory].
+
+At least, this is how I understand the Spec; esp. the Javadoc of the https://jakarta.ee/specifications/concurrency/3.0/apidocs/jakarta/enterprise/concurrent/managedthreadfactory[ManagedThreadFactory] class.
+
+*Please correct me if I'm wrong!*
