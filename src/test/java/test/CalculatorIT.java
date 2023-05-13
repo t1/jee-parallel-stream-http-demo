@@ -5,6 +5,10 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.Instant;
+
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.BDDAssertions.then;
 
 class CalculatorIT {
@@ -19,9 +23,22 @@ class CalculatorIT {
     }
 
     @Test
-    void shouldCalculateSum() {
-        var sum = SERVICE.path("/sum").request().get(Integer.class);
+    void shouldCalculateSum2() {
+        var start = Instant.now();
+        var sum = SERVICE.path("/sum2").request().get(Integer.class);
+        var duration = Duration.between(start, Instant.now());
 
         then(sum).isEqualTo(5);
+        then(duration).isLessThan(Duration.of(1, SECONDS));
+    }
+
+    @Test
+    void shouldCalculateSum15() {
+        var start = Instant.now();
+        var sum = SERVICE.path("/sum15").request().get(Integer.class);
+        var duration = Duration.between(start, Instant.now());
+
+        then(sum).isEqualTo(135);
+        then(duration).isLessThan(Duration.of(3, SECONDS));
     }
 }

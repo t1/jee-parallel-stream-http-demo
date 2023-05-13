@@ -1,6 +1,6 @@
 = Jakarta EE Parallel Stream Http Demo
 
-This is a little demo to show how to use a parallel stream of managed threads doing http requests.
+Experiments with parallel streams of managed threads doing http requests.
 
 It has two REST resources:
 
@@ -10,12 +10,22 @@ It has two REST resources:
 |http://localhost:8080/\{n}plus\{m}
 |the sum of `n` and `m`
 
-|http://localhost:8080/sum
-|the sum of a stream of 1 and 2, adding 1 to every element => 5
+|http://localhost:8080/sum\{n}
+|the sum of a stream of 1 to `n`, adding 1 to every element, e.g. `sum2` = 5
 |===
 
 The `sum` resource does two parallel http requests to the `plus` resource, using a proper https://jakarta.ee/specifications/concurrency/3.0/jakarta-concurrency-spec-3.0.html#managedthreadfactory[Managed Thread Factory].
 
-At least, this is how I understand the Spec; esp. the Javadoc of the https://jakarta.ee/specifications/concurrency/3.0/apidocs/jakarta/enterprise/concurrent/managedthreadfactory[ManagedThreadFactory] class.
+As I understand the Spec (esp. the Javadoc of the https://jakarta.ee/specifications/concurrency/3.0/apidocs/jakarta/enterprise/concurrent/managedthreadfactory[ManagedThreadFactory] class), this should be possible (see `Parallel.java`):
+
+* Inject a `ManagedThreadFactory` via `@Resource`.
+* Create a `ForkJoinPool` based on that.
+* Submit tasks to that pool.
+* Tasks are managed and can access, e.g., `@RequestScoped` beans.
+
+I can see that the worker threads are not from the common pool, so I'd assume that they are actually managed.
+But it fails on WildFly with `WELD-001303: No active contexts for scope type jakarta.enterprise.context.RequestScoped`.
+
+If I do it in a traditional way (i.e. with a non-parallel stream and an intermediate `.toList().stream()`), it works.
 
 *Please correct me if I'm wrong!*

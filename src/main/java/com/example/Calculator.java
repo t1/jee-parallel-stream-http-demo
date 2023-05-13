@@ -8,14 +8,18 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.stream.Stream;
+import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Path("/")
 public class Calculator {
 
     @Inject
-    AddOne addOne;
+    RequestId requestId;
+
+    @Inject
+    Sum sum;
 
     @Inject
     Parallel parallel;
@@ -24,26 +28,35 @@ public class Calculator {
     public int plus(@PathParam("n") int n, @PathParam("m") int m) throws InterruptedException {
         Thread.sleep(500L + n * 100L);
         var result = n + m;
-        log.info("{} plus {} is {}", n, m, result);
+        log.info("{} plus {} is {} [{}]", n, m, result, requestId.getValue());
         return result;
     }
 
 
-    @GET @Path("/sum")
-    public Integer sum() {
+    @GET @Path("/sum{n}")
+    public Integer sum(@PathParam("n") int n) {
         var start = Instant.now();
-        log.info("start ------------------------------------------");
-        var sum = parallel.submit(Stream.of(1, 2), stream -> stream
-            .peek(number -> log("call " + number, start))
-            .map(number -> addOne.to(number))
-            .peek(result -> log("got " + result, start))
-            .mapToInt(Integer::intValue)
-            .sum());
-        log("sum " + sum, start);
-        return sum;
-    }
-
-    private static void log(String message, Instant start) {
-        log.info(message + " [" + Duration.between(start, Instant.now()) + "]");
+        Consumer<String> logger = message -> log.info(message + " [" + Duration.between(start, Instant.now()) + "] " + parallel);
+        log.info("start " + n + " ------------------------------------------");
+        // ### sequential stream with intermediate collection [this works]
+        // %%% parallel stream with unmanaged threads [this fails as expected]
+        // $$$ parallel stream with managed threads [this should work but fails]
+        var result =
+            parallel.submit( // $$$
+                IntStream.rangeClosed(1, n).boxed()
+                // .parallel() // %%%
+                , stream -> stream // $$$
+                    .peek(number -> logger.accept("call " + number))
+                    .map(number -> sum.of(number, 1)) // $$$ %%%
+                    // .map(number -> sum.futureOf(number, 1)) // ###
+                    // .toList().stream() // ###
+                    // .map(Parallel::get) // ###
+                    .peek(sum -> logger.accept("got " + sum))
+                    .mapToInt(Integer::intValue)
+                    .sum()
+            ) // $$$
+            ;
+        logger.accept("sum " + result);
+        return result;
     }
 }
