@@ -1,6 +1,6 @@
 = Jakarta EE Parallel Stream Http Demo
 
-Experiments with parallel streams of managed threads doing http requests.
+Experiments with parallel streams of Jakarta EE managed threads doing http requests.
 
 It has two REST resources:
 
@@ -14,9 +14,9 @@ It has two REST resources:
 |the sum of a stream of 1 to `n`, adding 1 to every element, e.g. `sum2` = 5
 |===
 
-The `sum` resource does two parallel http requests to the `plus` resource, using a proper https://jakarta.ee/specifications/concurrency/3.0/jakarta-concurrency-spec-3.0.html#managedthreadfactory[Managed Thread Factory].
+The `sum` resource does `n` parallel http requests to the `plus` resource.
 
-As I understand the Spec (esp. the Javadoc of the https://jakarta.ee/specifications/concurrency/3.0/apidocs/jakarta/enterprise/concurrent/managedthreadfactory[ManagedThreadFactory] class), this should be possible (see `Parallel.java`):
+As I understand the https://jakarta.ee/specifications/concurrency/3.0/jakarta-concurrency-spec-3.0.html#managedthreadfactory[Jakarta Concurrency Spec 3.0] (esp. the Javadoc of the https://jakarta.ee/specifications/concurrency/3.0/apidocs/jakarta/enterprise/concurrent/managedthreadfactory[ManagedThreadFactory] class), this should be possible (as I've implemented in `Parallel.java`):
 
 * Inject a `ManagedThreadFactory` via `@Resource`.
 * Create a `ForkJoinPool` based on that.
