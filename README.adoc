@@ -29,3 +29,5 @@ But it fails on WildFly with `WELD-001303: No active contexts for scope type jak
 If I do it in a traditional way (i.e. with a non-parallel stream and an intermediate `.toList().stream()`), it works.
 
 *Please correct me if I'm wrong!*
+
+To reproduce it, just run `mvn wildfly:dev` and call `http://localhost/sum2`.
