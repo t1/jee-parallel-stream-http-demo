@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.util.UUID;
 
 @RequestScoped
+@Getter
 public class RequestId {
-    @Getter
     private final UUID value = UUID.randomUUID();
 }

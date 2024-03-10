@@ -42,20 +42,20 @@ public class Calculator {
         // %%% parallel stream with unmanaged threads [this fails as expected]
         // $$$ parallel stream with managed threads [this should work but fails]
         var result =
-            parallel.submit( // $$$
+                //parallel.submit( // $$$
                 IntStream.rangeClosed(1, n).boxed()
-                // .parallel() // %%%
-                , stream -> stream // $$$
-                    .peek(number -> logger.accept("call " + number))
-                    .map(number -> sum.of(number, 1)) // $$$ %%%
-                    // .map(number -> sum.futureOf(number, 1)) // ###
-                    // .toList().stream() // ###
-                    // .map(Parallel::get) // ###
-                    .peek(sum -> logger.accept("got " + sum))
-                    .mapToInt(Integer::intValue)
-                    .sum()
-            ) // $$$
-            ;
+                        // .parallel() // %%%
+                        // , stream -> stream // $$$
+                        .peek(number -> logger.accept("call " + number))
+                        // .map(number -> sum.of(number, 1)) // $$$ %%%
+                        .map(number -> sum.futureOf(number, 1)) // ###
+                        .toList().stream() // ###
+                        .map(Parallel::get) // ###
+                        .peek(sum -> logger.accept("got " + sum))
+                        .mapToInt(Integer::intValue)
+                        .sum()
+                //) // $$$
+                ;
         logger.accept("sum " + result);
         return result;
     }
