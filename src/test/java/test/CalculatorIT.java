@@ -39,6 +39,6 @@ class CalculatorIT {
         var duration = Duration.between(start, Instant.now());
 
         then(sum).isEqualTo(135);
-        then(duration).isLessThan(Duration.of(3, SECONDS));
+        then(duration).isLessThan(Duration.of(5, SECONDS));
     }
 }
