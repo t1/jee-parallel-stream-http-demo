@@ -17,6 +17,7 @@
 
         <lombok.version>1.18.48</lombok.version>
         <junit.version>6.1.3</junit.version>
+        <resteasy.version>7.0.6.Final</resteasy.version>
     </properties>
 
     <dependencies>
@@ -74,15 +75,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.resteasy.microprofile</groupId>
-            <artifactId>microprofile-rest-client</artifactId>
-            <version>3.0.2.Final</version>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <version>${resteasy.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-json-binding-provider</artifactId>
-            <version>7.0.6.Final</version>
+            <version>${resteasy.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
